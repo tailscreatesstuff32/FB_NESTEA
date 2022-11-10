@@ -24,9 +24,8 @@ only 1 player support for now
 
 this version is referenced off
 of this javascript nes emulator
-the other branch will be referenced with
-javidx9s nes emulator 
- 
 
 https://github.com/elzo-d/NesJs
 
+the other branch will be referenced with
+javidx9s nes emulator 

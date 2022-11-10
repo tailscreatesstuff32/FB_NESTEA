@@ -1,0 +1,51 @@
+[Project]
+Version=3
+Description=FB_NESTEA
+Api=fb (FreeBASIC)
+Grouping=1
+AddMainFiles=1
+AddModuleFiles=1
+ResExport=
+CompileIfNewer=0
+IncVersion=0
+RunCmd=0
+[Make]
+Module=Module Build,fbc -c
+Recompile=2
+Current=3
+1=Windows GUI (debug),fbc -g -s gui
+2=Windows Console (debug),fbc -g -s console
+3=Windows Console,fbc -s console
+4=Windows GUI,fbc -s gui
+Output=BIN\FB_NESTEA.exe
+Run=
+Delete=
+[TabOrder]
+TabOrder=1
+[File]
+1=APU\APU.bas
+2=filesaveopen.bas
+3=FB_NESTEA.bas
+4=resources.bi
+5=APU\APU.bi
+6=APU\Audio.bas
+7=APU\Audio.bi
+8=APU\olc2A02.bas
+Main=3
+9=NES\APU.bas
+10=NES\APU.bi
+11=NES\bus.bas
+12=NES\bus.bi
+13=NES\cartridge.bas
+14=NES\CPU.bas
+15=NES\CPU.bi
+16=NES\CRC32.bas
+17=NES\olc6502.bas
+18=NES\olc6502.bi
+19=NES\olc6502_BACKUP2.bas
+20=NES\PPU.bas
+21=NES\PPU.bi
+[BreakPoint]
+1=
+[FileInfo]
+1=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

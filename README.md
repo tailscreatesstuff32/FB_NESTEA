@@ -7,6 +7,8 @@ please note stuff needs clean up and can still be in a WIP
 such as some menu items are broken
 that im adding back since its a reupload
 
+supports battery backed saves
+
 only 1 player support for now
 
 | Button | Controller 1    | 

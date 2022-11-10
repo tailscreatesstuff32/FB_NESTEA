@@ -1,6 +1,8 @@
 # FB_NESTEA
 an nes emulator with audio in Freebasic!
 
+compiles fine in freebasic 1.0.7.3
+
 please note stuff needs clean up and can still be in a WIP
 such as some menu items are broken
 that im adding back since its a reupload

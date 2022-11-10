@@ -8,14 +8,15 @@ only 1 player support for now
 
 | Button | Controller 1    | 
 | ------ | --------------- | 
-| Left   | Left arrow key  | 
-| Right  | Right arrow key | 
-| Up     | Up arrow key    | 
-| Down   | Down arrow key  | 
 | Start  | S               | 
 | Select | A               | 
 | B      | Z               | 
 | A      | X               | 
+| Left   | Left arrow key  | 
+| Right  | Right arrow key | 
+| Up     | Up arrow key    | 
+| Down   | Down arrow key  | 
+
 
 
 

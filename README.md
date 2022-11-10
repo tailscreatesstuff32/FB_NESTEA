@@ -21,6 +21,13 @@ only 1 player support for now
 | Down   | Down arrow key  | 
 
 
+ extra controls
+
+| Button      | Controller 1    | 
+| ----------- | --------------- | 
+| hard reset  | H               | 
+| soft reset  | R               | 
+| pause       | SPACE           |
 
 
 

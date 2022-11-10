@@ -29,7 +29,7 @@ only 1 player support for now
 | soft reset  | R               | 
 | pause       | SPACE           |
 | cycle       | C               |
-| frame Cycle | F               |
+| frame cycle | F               |
 
 this version is referenced off
 of this javascript nes emulator

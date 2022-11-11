@@ -458,8 +458,8 @@ sub PPU.generateDot()
         if(sprPixel > 0)  then
           '// check for sprite zero
           if(sprNum = 0 and this.spriteZeroIn and this.dot <> 255)  then
-            this.spriteZero = true 
-                 EndIf
+            this.spriteZero = true
+          EndIf
 	EndIf
         if(sprPixel > 0 and sprPriority = 0) then
        finalColor = this.readPalette(sprPixel + &H10) 

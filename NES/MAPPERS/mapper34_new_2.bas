@@ -420,6 +420,9 @@ End Function
   End Sub
   
  
+function Mapper_34.ppuPeak(adr As uint16_t) As uint8_t
+	return this._ppuRead(adr)
+End Function
 
 
 

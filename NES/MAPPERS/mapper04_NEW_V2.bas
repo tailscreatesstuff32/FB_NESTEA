@@ -129,6 +129,10 @@ function Mapper_04._ppuWrite(adr As uint16_t,ByRef value As uint32_t) as uint8_t
 End function 
 
 
+function Mapper_04.ppuPeak(adr As uint16_t) As uint8_t
+	return this._ppuRead(adr)
+End Function
+
 function Mapper_04._ppuRead(adr As uint16_t) As uint8_t
 
  if(adr < &H2000)  then

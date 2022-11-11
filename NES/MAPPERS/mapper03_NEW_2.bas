@@ -218,3 +218,7 @@ End Function
 	'return true 
 	
  End Function
+
+function Mapper_03.ppuPeak(adr As uint16_t) As uint8_t
+	return this._ppuRead(adr)
+End Function

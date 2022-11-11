@@ -54,6 +54,9 @@ End Enum
    	Declare virtual function _ppuWrite(adr As uint16_t,ByRef value As uint32_t) as uint8_t
 
 
+  	  	  		Declare virtual function ppuPeak(adr As uint16_t) As uint8_t
+
+
   	Declare virtual function getmirroringaddr(addr1 as uint16_t) as uint32_t
   	Declare virtual function getchraddr1(addr1 as uint16_t) as uint32_t
   	

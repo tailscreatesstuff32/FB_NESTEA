@@ -388,7 +388,9 @@ Function Mapper_01.ppuMapWrite(addr1 As uint16_t , ByRef mapped_addr As uint32_t
 
 End Function
 
-
+function Mapper_01.ppuPeak(adr As uint16_t) As uint8_t
+	return this._ppuRead(adr)
+End Function
 
 function  Mapper_01._mirror() as MIRROR
 	Return this.mirrormode

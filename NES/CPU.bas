@@ -1150,10 +1150,10 @@ End Sub
 
  
 Function CPU.complete() As BOOL ' finished
-'	
-	Return iif(this.cyclesleft = 0,true,false)
-'	 
-'	
+ 	
+	'Return iif(this.cyclesleft = 0,true,false)
+		Return iif(this.cyclesleft = 0 andalso this.cyclesLeft =  0 andalso this.Bus->indma = false andalso (this.Bus->cycles mod 3)= 0,true,false)
+ 	
 End Function
  
 

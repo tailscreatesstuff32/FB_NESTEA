@@ -1379,12 +1379,13 @@ fElapsedTime = Timer-fElapsedstart
 		nes.controller(0) Or= Iif((GetAsyncKeyState(vk_RIGHT) And &H8000),&H01, &H00)
 
 
+	'screensync()
 	
 	if  bEmulationRun then
-			if (fResidualTime > 0.0f) Then
-						fResidualTime -= fElapsedTime
-					Else
-						fResidualTime += (1.0f / 60.0f) - fElapsedTime
+			 if (fResidualTime > 0.0f) Then
+				 		fResidualTime -= fElapsedTime
+				 	Else
+					 	fResidualTime += (1.0f / 60.0f) - fElapsedTime
 						
 						
 						
@@ -1405,7 +1406,7 @@ fElapsedTime = Timer-fElapsedstart
 			 
 					 'frame_complete = FALSE
 					frames_per_sec(hwnd)		
-			End If
+	End If
 			
 	'else
 					
@@ -1430,8 +1431,18 @@ fElapsedTime = Timer-fElapsedstart
 		
 		
 			If  KEYPRESSED(vk_space)  Then
-	bEmulationRun = Not(bEmulationRun)
-							checkmenuitem(hFilesub,IDM_FILE_PAUSE ,IIf(bEmulationRun,MF_UNCHECKED,MF_CHECKED))
+	'bEmulationRun = Not(bEmulationRun)
+	'						checkmenuitem(hFilesub,IDM_FILE_PAUSE ,IIf(bEmulationRun,MF_UNCHECKED,MF_CHECKED))
+	'				if bEmulationRun = false then
+	'					
+	'					audio_hndler->stop_aud
+	'				else
+	'					audio_hndler->start_aud
+	'				EndIf
+	'		EndIf
+    	emurun = Not(emurun)
+				bEmulationRun = emurun
+							checkmenuitem(hFilesub,IDM_FILE_PAUSE ,IIf(emurun,MF_UNCHECKED,MF_CHECKED))
 					if bEmulationRun = false then
 						
 						audio_hndler->stop_aud
@@ -1439,6 +1450,7 @@ fElapsedTime = Timer-fElapsedstart
 						audio_hndler->start_aud
 					EndIf
 			EndIf
+			
 			
 			
 			
@@ -1451,21 +1463,21 @@ fElapsedTime = Timer-fElapsedstart
 	'				else
 	'					audio_hndler->start_aud
 	'				EndIf
-	'nes._clock()
-	 Do:  nes._clock():  Loop while IIf(nes.cpu.complete() = 0,1,0) 
+	 'nes._clock()
+	' Do:  nes._clock():  Loop while IIf(nes.cpu.complete() = 0,1,0) 
 	
-	  Do:  nes._clock():  Loop while IIf(nes.cpu.complete(),1,0) 
+	 ' Do:  nes._clock():  Loop while IIf(nes.cpu.complete(),1,0) 
 	
 	'Do:  nes._clock():  Loop while  iif((nes.cpu.getcycles() = 0 and (nes.inDma = false) and (nes.cpu.getcycles() mod 3) = 0)= 0,true,false) 
 	
-	
-	
-	
-	
-	' Do:  nes._clock():  Loop while IIf(nes.cpu.complete(),0,1)
-		
+			
 '				Do:  bus_clock2:  Loop while iif(complete(),1,0)
 	
+	
+	
+	
+	  Do:  nes._clock():  Loop while IIf(nes.cpu.complete(),false,true)
+
 	
 	
 			EndIf
@@ -1523,13 +1535,15 @@ fElapsedTime = Timer-fElapsedstart
    '   fill_pal_rect2(dc,i * 16, 16, 16, 16,_col) 
    ' next
 	
-	
-	'ScreenSync
+	 'ScreenSync
+	'Wait &h3da, &h8
 	
 	if bfullscreen then
+		'screensync()
 		   DrawNesScrn(dc,nes.ppu._mydata(),((0+128)-64),0,rct.right,rct.bottom)
   'DrawNesScrn(dc,mydata(),((0+128)-64),0,rct.right,rct.bottom)
 	else
+		'screensync()
 	 	  DrawNesScrn(dc,nes.ppu._mydata(),0,0,rct.right,rct.bottom)
   'DrawNesScrn(dc,mydata(),0,0,rct.right,rct.bottom)
 	end if
@@ -2061,7 +2075,7 @@ Function WndProc(hWnd As HWND, msg As  UINT, wParam As WPARAM, lParam As LPARAM)
 				'			
 				'Do:  bus_clock2:  Loop while IIf(complete(),0,1)
 				'Do:  bus_clock2:  Loop while iif(complete(),1,0)
-				
+				  nes._clock()
 				
 		
 						Case IDM_ZOOM_1X
@@ -2164,6 +2178,7 @@ setwindowpos(hwnd,NULL,winrect2.left,winrect2.top,winrect.right-winrect.left,win
 					'EndIf
 				
 				  		emurun = Not(emurun)
+				  		bEmulationRun = emurun
 							checkmenuitem(hFilesub,IDM_FILE_PAUSE ,IIf(emurun,MF_UNCHECKED,MF_CHECKED))
 					if emurun= false then
 						
@@ -2173,7 +2188,14 @@ setwindowpos(hwnd,NULL,winrect2.left,winrect2.top,winrect.right-winrect.left,win
 						
 					EndIf
 				
-				 
+				 	'bEmulationRun = Not(bEmulationRun)
+					'		checkmenuitem(hFilesub,IDM_FILE_PAUSE ,IIf(bEmulationRun,MF_UNCHECKED,MF_CHECKED))
+					'if bEmulationRun = false then
+					'	
+					'	audio_hndler->stop_aud
+					'else
+					'	audio_hndler->start_aud
+					'EndIf
 							
 					End Select
          End Select

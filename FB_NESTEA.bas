@@ -112,7 +112,8 @@ Dim Shared bFullScreen As bool = FALSE 								'	// Create a boolean and set it 
 	  Dim Shared hView_Zoom_sub As HMENU
 	  
 	  Dim Shared my_pattables As uint32_t Ptr'(128*128) 
-	  
+	  Dim Shared As HMENU hFile_VidRecord_sub 
+			Dim Shared As  HMENU hFile_AudRecord_sub 
 	  
 fElapsedstart = Timer
 
@@ -142,6 +143,9 @@ Dim shared map As  TMAPUINT16TSTRING
 
 
 Dim Shared pat_imgdata(512*480) As uInteger
+
+
+Dim Shared nme_imgdata(512*480) As UInteger
 
 
 
@@ -235,6 +239,40 @@ End Sub
 
 
 
+Sub drawNametables()
+
+
+	
+	For x As Integer = 0 To 64 - 1
+			For y As Integer = 0 To 60 - 1
+				dim as UInteger ry = y + iif(y >= 30, 2, 0)
+				Dim As UInteger tileNumAdr	= &H2000 + iif(ry > 31 , &H800 , 0) + iif(x > 31 , &H400 , 0)
+				tileNumAdr += ((ry and &H1f) shl 5) + (x And &H1f) 
+            Dim As UByte tileNum = getmapper()->ppuPeak(tileNumAdr)
+				Dim  As UInteger attAdr = &H23c0 + iif(ry > 31 , &H800 , 0) + iif(x > 31 , &H400 , 0)
+				attAdr += ((ry and &H1c) Shl 1) + ((x and &H1c) shr 2)
+				Dim As UByte atr = getmapper()->ppuPeak(attAdr)
+				
+				
+        if((ry and &H2) > 0) Then  
+         ' // bottom half
+          atr Shr= 4 
+        End If
+        
+        atr and= &Hf 
+        if((x and &H2) > 0) Then
+          '// right half
+          atr Shr= 2 
+        endif
+        atr And= &H3 
+
+        drawTile(@nme_imgData(0), x * 8, y * 8, tileNum + iif(nes.ppu.bgPatternBase = 0, 0, 256), atr) 
+				
+				
+			Next
+	Next
+
+End Sub
 
 
 		
@@ -1120,6 +1158,8 @@ Sub win_menu(hwnd As HWND)
 			hViewsub = CreatePopupMenu()
 			
 			hFile_Recent_sub = CreatePopupMenu()
+			hFile_VidRecord_sub = CreatePopupMenu()
+			hFile_AudRecord_sub = CreatePopupMenu()
 			hView_Zoom_sub = CreatePopupMenu()
 			
 			AppendMenu(hmenu,MF_POPUP,hFilesub,"&file")
@@ -1143,8 +1183,14 @@ Sub win_menu(hwnd As HWND)
 				AppendMenu(hFilesub,MF_ENABLED,IDM_FILE_SAVEPIC ,"&Save NES Screen")
 				AppendMenu(hFilesub,MF_ENABLED,IDM_FILE_PATTABLE01 ,"&Save Pat table left")
 				AppendMenu(hFilesub,MF_ENABLED,IDM_FILE_PATTABLE02 ,"&Save Pat table right")
+				AppendMenu(hFilesub,MF_ENABLED,IDM_FILE_NAMETABLES ,"&Save Nametables")
+				'AppendMenu(hFilesub,MF_SEPARATOR,IDM_SEPARATOR,"-")
+				AppendMenu(hFilesub,MF_ENABLED,IDM_FILE_PATTABLE02 ,"&Save Palette")
 				AppendMenu(hFilesub,MF_SEPARATOR,IDM_SEPARATOR,"-")
-				AppendMenu(hFilesub,MF_GRAYED,0 ,"&Record Audio")
+				
+				AppendMenu(hFilesub,MF_POPUP Or MF_GRAYED,hFile_VidRecord_sub,"&Record Movie") ' WIP
+				AppendMenu(hFilesub,MF_POPUP Or MF_GRAYED,hFile_AudRecord_sub,"&Record Audio") ' WIP
+				
 				AppendMenu(hFilesub,MF_UNCHECKED,IDM_FILE_MUTEAUDIO ,"&Mute Audio")
 				  'AppendMenu(hFilesub,MF_ENABLED,IDM_FILE_SAVEPIC ,"&Save Frames")
 				
@@ -2122,13 +2168,23 @@ Function WndProc(hWnd As HWND, msg As  UINT, wParam As WPARAM, lParam As LPARAM)
 							'Print pic1
 							'SaveNESScrn(pic1,128,128,@mydata_pattables(0).mydata(0))
 						Case IDM_FILE_PATTABLE02
-								pic1 = file_opensave(hwnd,FALSE)
+											pic1 = file_opensave(hwnd,FALSE)
+								
+		   If FileExists(pic1) Then
+   	Kill(pic1)
+		   End If
+		   
+		   drawPatternsPals()
+		   	SaveNESScrn(pic1,512,480,@pat_imgdata(0))
+							
+						Case IDM_FILE_NAMETABLES
+							   pic1 = file_opensave(hwnd,FALSE)
 		   					If FileExists(pic1) Then
-		   					Kill(pic1)
-		  						 End If
-							'Print pic1
-							'SaveNESScrn(pic1,128,128,@mydata_pattables(1).mydata(0))
-							drawPatternsPals()
+		   						Kill(pic1)
+							End If
+							drawNametables()
+							
+							SaveNESScrn(pic1,512,480,@nme_imgdata(0))
 							
 						Case IDM_FILE_EXIT
 							

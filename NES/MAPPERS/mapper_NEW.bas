@@ -195,6 +195,9 @@ End Destructor
   End Constructor
   
  
+function Mapper.ppuPeak(adr As uint16_t) As uint8_t
+
+End Function
 
 
   function Mapper.irqstate() as bool

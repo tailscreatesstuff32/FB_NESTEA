@@ -36,6 +36,7 @@ dim shared mydata1 as  int16_t ptr
   	Declare function ppuMapRead(addr As uint16_t,ByRef mapped_addr As uint32_t) As BOOLEAN
   	Declare function ppuMapWrite(addr As uint16_t,ByRef mapped_addr As uint32_t) As BOOLEAN
   	Declare Sub resetmappper(hard as boolean)
+  		Declare function ppuPeak(adr As uint16_t) As uint8_t
   	
   	declare sub runcmd(param as uint8_t)
   	

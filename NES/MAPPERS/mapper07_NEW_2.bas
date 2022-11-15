@@ -38,7 +38,8 @@ MVectorTemplate(uint8_t)
   	'
   	'
   	'private:
-
+	Declare function ppuPeak(adr As uint16_t) As uint8_t
+  	
   	
   	  	  	  		Declare function _ppuRead(adr As uint16_t) As uint8_t
    	Declare function _ppuWrite(adr As uint16_t,ByRef value As uint32_t)  as uint8_t

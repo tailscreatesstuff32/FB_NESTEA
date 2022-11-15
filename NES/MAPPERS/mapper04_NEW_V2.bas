@@ -20,7 +20,8 @@ MVectorTemplate(uint8_t)
   	Declare function ppuMapRead(addr As uint16_t,ByRef mapped_addr As uint32_t) As BOOLEAN
   	Declare function ppuMapWrite(addr As uint16_t,ByRef mapped_addr As uint32_t) As BOOLEAN
   	
-  
+  	Declare function ppuPeak(adr As uint16_t) As uint8_t
+  	
   	
   	  	  	  		Declare function _ppuRead(adr As uint16_t) As uint8_t
    	Declare function _ppuWrite(adr As uint16_t,ByRef value As uint32_t)  as uint8_t

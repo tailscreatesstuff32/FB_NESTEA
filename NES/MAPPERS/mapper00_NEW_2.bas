@@ -28,7 +28,7 @@ MVectorTemplate(uint8_t)
   	Declare function getmirroringadr(addr1 as uint16_t) as uint32_t
   	'Declare function getchradr(adr as uint16_t) as uint32_t
   	
-  	
+  	Declare function ppuPeak(adr As uint16_t) As uint8_t
   	
 
 

@@ -33,14 +33,12 @@ only 1 player support for now
 | Cycle       | C               |
 | Frame cycle | F               |
 
-this version is referenced off of
-javidx9s nes emulator 
-
-https://github.com/OneLoneCoder/olcNES
-
-
-the other branch is referenced with
-javascript nes emulator
+this version is referenced off
+of this javascript nes emulator
 
 https://github.com/elzo-d/NesJs
 
+the other branch will be referenced with
+javidx9s nes emulator 
+
+https://github.com/OneLoneCoder/olcNES

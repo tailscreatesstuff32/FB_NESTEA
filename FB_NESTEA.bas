@@ -10,13 +10,13 @@ Dim shared As HWND hwnd
 
 
 
-dim shared CPU_CHOOSE as bool = false 'TRUE is old cpu olc6502.bi and olc6502.bas
+Dim shared CPU_CHOOSE as bool = false 'TRUE is old cpu olc6502.bi and olc6502.bas
 'type cpu_type as olc6502
-type cpu_type as CPU 'NesJS CPU
+Type cpu_type as CPU 'NesJS CPU
 
-dim shared PPU_CHOOSE as bool = false 'TRUE is old PPU olc2C02.bi and olc2C02.bas
+Dim shared PPU_CHOOSE as bool = false 'TRUE is old PPU olc2C02.bi and olc2C02.bas
 'type ppu_type as olc2C02
-type ppu_type as PPU
+Type ppu_type as PPU
 
 'dim shared CART_CHOOSE as bool = false 'TRUE is old cart cartridge.bi and cartridge.bas
 'type cart_type as ????
@@ -37,18 +37,18 @@ type ppu_type as PPU
 
 '///////////////////////////////////
 
-dim shared nes as bus
+Dim shared nes as bus
 
-dim shared audio_hndler as AudioHandler ptr 
+Dim shared audio_hndler as AudioHandler ptr 
 	
 
-dim shared elapsedMS as float
-dim shared as uint64_t end1 
-dim shared as uint64_t start1
+Dim shared elapsedMS as float
+Dim shared as uint64_t end1 
+Dim shared as uint64_t start1
 
-dim shared frmenums as uint32_t
+Dim shared frmenums as uint32_t
 
-dim shared emurun as boolean = false
+Dim shared emurun as boolean = false
 
 '
 'pattables(0)=ImageCreate(128,128,RGB(0,0,0),32)
@@ -63,30 +63,30 @@ dim shared emurun as boolean = false
 #Include "file.bi"
 #Include "filesaveopen.bas"
 
-#include "resources.bi"
+#Include "resources.bi"
 
 
-#define SCREEN_WIDTH  640								'	// We want a 800 pixel width resolution
-#define SCREEN_HEIGHT 480								'	// We want a 600 pixel height resolution
+#Define SCREEN_WIDTH  640								'	// We want a 800 pixel width resolution
+#Define SCREEN_HEIGHT 480								'	// We want a 600 pixel height resolution
 
 
 
-#define KEYDOWN(vk_code) (IIf(GetAsyncKeyState(vk_code) And &H8000), 1, 0)
-#define KEYUP(vk_code)   (IIf(GetAsyncKeyState(vk_code) And &H8000),0, 1)
+#Define KEYDOWN(vk_code) (IIf(GetAsyncKeyState(vk_code) And &H8000), 1, 0)
+#Define KEYUP(vk_code)   (IIf(GetAsyncKeyState(vk_code) And &H8000),0, 1)
 
-const DEF_CX = 256 
-const  DEF_CY = 240
+Const DEF_CX = 256 
+Const  DEF_CY = 240
 
 Using fb
 Dim Shared fResidualTime As float
 Dim Shared fElapsedTime As float
 Dim Shared fElapsedstart As float
 
-DIM SHARED ff As Integer
-DIM SHARED fps As Integer
-DIM SHARED start As Single
-DIM SHARED bEmulationRun As bool = false
-DIM SHARED bSingleFrame As bool = FALSE
+Dim SHARED ff As Integer
+Dim SHARED fps As Integer
+Dim SHARED start As Single
+Dim SHARED bEmulationRun As bool = false
+Dim SHARED bSingleFrame As bool = FALSE
 
 
 Dim Shared isFpressed As bool = FALSE
@@ -119,8 +119,8 @@ fElapsedstart = Timer
 Declare Function ChangeToFullScreen(width1 As Integer ,height1 As  Integer ) As BOOL
 
 
-declare sub audioloop()
-declare sub debug1()
+Declare sub audioloop()
+Declare sub debug1()
 
 audio_hndler = new AudioHandler(48000,AUDIO_S16SYS,2048,16)
 audio_hndler->start_aud()
@@ -130,9 +130,9 @@ audio_hndler->start_aud()
 'thread1 =  threadcreate(@audioloop)
 
 
-dim shared quit as boolean = false
+Dim shared quit as boolean = false
 
-dim shared muted as bool
+Dim shared muted as bool
 
 MMapTemplate(UINT16T ,String)
 
@@ -141,9 +141,97 @@ Dim shared map As  TMAPUINT16TSTRING
 
 
 
+Dim Shared pat_imgdata(512*480) As uInteger
 
 
 
+Sub drawtile(imgdata As UByte Ptr, x As Integer,y As Integer, num As Integer, col As Integer)
+	
+  for i as integer = 0 To 8 - 1
+  	  '    // for each row
+       dim lp As UByte = getmapper()->ppuPeak(num * 16 + i) 
+       Dim hp As UByte = getmapper()->ppuPeak(num * 16 + i + 8) 
+		for j as integer = 0 To 8 - 1
+		
+	 
+			 dim shift As UByte = 7 - j
+			 
+			 Dim pixel As UByte = (lp shr shift) and 1
+			 
+		
+			 
+			 pixel Or= ((hp shr shift) and 1) Shl 1
+			 
+		 	 dim pind As UByte = IIf (pixel = 0, 0, col * 4 + pixel)
+			 
+			 
+			 
+			Dim As Integer index = ((y + i) * 512 + (x + j)) * 4 
+			
+			Dim As UByte Ptr _color = Cast(UByte Ptr,@palScreen(nes.ppu.readPalette(pind) and &H3f)) '@Cast(UByte Ptr,@nes.ppu.nesPal(0,0))[0] 
+			
+			
+			
+			
+	      imgdata[index] = _color[0]  '// r
+         imgdata[index + 1] = _color[1]  '// g
+         imgdata[index + 2] = _color[2]  '// b
+         imgdata[index + 3] = 255  '// a
+			
+		Next
+  Next
+
+End Sub 
+
+
+Sub fillrct(buf As UInteger Ptr, x1 As Integer,y1 As Integer,x2 As Integer,y2 As Integer,col As UByte Ptr)
+	
+	
+	       
+         For y As Integer = 0 To y2-1 
+      	For x As Integer = 0 To x2-1 
+        
+                       pat_imgdata(((y +y1)*512) + (x+x1)) =  rgba(col[2],col[1],col[0], 255) 'palScreen(nes.ppu.readPalette(0) and &H3f)
+       
+       
+        	
+        	Next
+        Next
+	
+	
+	
+	
+End Sub
+
+
+
+
+
+Sub drawPatternsPals()
+ 
+	
+	For x As integer = 0 To 16 -1
+		For y As Integer = 0 To 16 -1
+		   drawTile(@pat_imgdata(0), x * 8, y * 8, y * 16 + x, 0) 
+		Next
+	Next
+	
+		For x As integer = 0 To 16 -1
+		For y As Integer = 0 To 16 -1
+		   drawTile(@pat_imgdata(0),128 + (x * 8), y * 8, 256 + (y * 16 + x), 0) 
+		Next
+	Next
+		
+	
+      For i As Integer = 0 To 16-1
+       Dim  col As UByte Ptr = Cast(UByte Ptr,@palScreen(nes.ppu.readPalette(i) and &H3f)) 
+       fillrct(@pat_imgdata(0),i*16,128,16,16,col)
+       col = Cast(UByte Ptr,@palScreen(nes.ppu.readPalette(i+16) and &H3f)) 
+		 fillrct(@pat_imgdata(0),i*16,144,16,16,col)
+       
+      Next
+	
+End Sub
 
 
 
@@ -169,7 +257,7 @@ Dim shared map As  TMAPUINT16TSTRING
 	End Function
 
 
-sub drawram(x1 as integer,y1 as integer,naddr as uint16_t,nRows as integer,ncolumns as integer)
+Sub drawram(x1 as integer,y1 as integer,naddr as uint16_t,nRows as integer,ncolumns as integer)
 	
 	dim nramx as integer = x1
 	dim nramy as integer = y1
@@ -196,7 +284,7 @@ End Sub
 
 
 
-sub drawcode(x as integer ,y as integer ,nLiplayer as integer,old as bool)
+Sub drawcode(x as integer ,y as integer ,nLiplayer as integer,old as bool)
 	
 	
 
@@ -207,13 +295,13 @@ sub drawcode(x as integer ,y as integer ,nLiplayer as integer,old as bool)
 
 
 
-dim nOff as uint16_t
+Dim nOff as uint16_t
 
 
 
 'CHANGE WHEN NEEDED////////////////
 
-if old then
+If old then
 	 nOff=nes.cpu.pc
 	else
 	 nOff=nes.cpu.br(nes.cpu.pc)
@@ -312,7 +400,7 @@ End Sub
 
 
 
-sub drawOAM(x1 as integer,y1 as integer)
+Sub drawOAM(x1 as integer,y1 as integer)
 	dim s as string
 	'nes.ppu.oamRam(i*4+3)
 	LOCATE y1, x1
@@ -347,7 +435,7 @@ End Sub
 
 
 
-SUB DrawCpu (x1 AS INTEGER, y1 AS INTEGER,old as bool)
+Sub DrawCpu (x1 AS INTEGER, y1 AS INTEGER,old as bool)
 
 
     LOCATE y1+1, x1
@@ -358,7 +446,7 @@ Color 255
 
 'CHANGE WHEN NEEDED/////////////////////////////////
 
-if old then
+If old then
     Print " status: ";
     Color(IIf(nes.cpu.status And olc6502.N,10,12))
     PRINT " N ";
@@ -378,7 +466,7 @@ if old then
     PRINT " C "
     Color 255
 
-else
+Else
     Print " status: ";
     Color(IIf(NES.CPU.N,10,12))
     PRINT " N ";
@@ -399,7 +487,7 @@ else
         Color(IIf(NES.CPU.C,10,12))
     PRINT " C "
     Color 255
-end if
+End if
 '///////////////////////////////////////////////////////
 
 
@@ -415,7 +503,7 @@ end if
    
  
 'CHANGE WHEN NEEDED/////////////////////////////////////////////
-if old then
+If old then
     Locate y1+2, x1
     PRINT " PC: $"; LTRIM$(hex1(nes.cpu.PC , 4)) + " [" + LTRIM$(STR$(nes.cpu.PC)) + "]"
     Locate y1+3, x1
@@ -441,7 +529,7 @@ if old then
     PRINT " Stack P: $"; LTRIM$(hex1(nes.cpu.r(nes.cpu.SP), 4)) + " [" + LTRIM$(STR$(nes.cpu.r(nes.cpu.SP))) + "]"
    
     'LOCATE y1, x1+50
-end if   
+End if   
     
 '//////////////////////////////////////////////////////////////////////////////////////    
     
@@ -462,7 +550,7 @@ end if
  'print "vblank: " & nes.ppu.invblank
 
 
-END Sub
+End Sub
 'declare Sub Process2 Cdecl (ByVal userdata As Any Ptr, ByVal audbuffer As Ubyte Ptr, ByVal audlen As Integer)
 
 
@@ -541,7 +629,7 @@ End Function
 
 
 
-sub temp_apu_clock
+Sub temp_apu_clock
 	
 	               
 		if (nes.apu.framecounter = 29830 and nes.apu.step5Mode = 0) or _
@@ -750,7 +838,7 @@ Dim bmpinfo As BITMAPINFOHEADER
 End Sub
 
 
-sub init_rom
+Sub init_rom
 Dim bmp As String
 
 Dim s As String
@@ -970,7 +1058,7 @@ Function KEYPRESSED(vk_code As Integer) As bool
 	Return FALSE			
 End Function
 
-SUB frames_per_sec(hwnd As hwnd)
+Sub frames_per_sec(hwnd As hwnd)
     ff  = ff + 1
 
 
@@ -980,7 +1068,7 @@ SUB frames_per_sec(hwnd As hwnd)
  titles1="OLC-NES-NESTEA-FB-V0.1:"&" FPS:" & STR (fps )
 setwindowtext(hwnd,titles1 )
 
-END Sub
+End Sub
 
 Sub DrawNesScrn(dc As hDC,ImageData() As uint32_t,x1 As int16_t,y1 As int16_t, destwdth As int16_t, desthght As  int16_t)
 
@@ -1381,8 +1469,8 @@ fElapsedTime = Timer-fElapsedstart
 
 	'screensync()
 	
-	if  bEmulationRun then
-			 if (fResidualTime > 0.0f) Then
+	If  bEmulationRun then
+			 If (fResidualTime > 0.0f) Then
 				 		fResidualTime -= fElapsedTime
 				 	Else
 					 	fResidualTime += (1.0f / 60.0f) - fElapsedTime
@@ -1414,7 +1502,7 @@ fElapsedTime = Timer-fElapsedstart
 					
 	 		
 					
-	end if	
+	End if	
 	
 	'if bfullscreen then
 	'	   DrawNesScrn(dc,nes.ppu._mydata(),((0+128)-64),0,rct.right,rct.bottom)
@@ -1544,7 +1632,7 @@ fElapsedTime = Timer-fElapsedstart
   'DrawNesScrn(dc,mydata(),((0+128)-64),0,rct.right,rct.bottom)
 	else
 		'screensync()
-	 	  DrawNesScrn(dc,nes.ppu._mydata(),0,0,rct.right,rct.bottom)
+ 	 	  DrawNesScrn(dc,nes.ppu._mydata(),0,0,rct.right,rct.bottom)
   'DrawNesScrn(dc,mydata(),0,0,rct.right,rct.bottom)
 	end if
 
@@ -1688,7 +1776,7 @@ StretchDIBits dc,0,0,bmpinfo->biWidth,bmpinfo->biHeight,0,0,bmpinfo->biWidth,bmp
 
 Return TRUE
 			
-end Function
+End Function
 
 Function mysavebmp(path As String,mydata1 As ULong ptr = 0) As BOOLEAN
 	
@@ -1777,9 +1865,9 @@ Get #bmpfile1,,*pixels,bmpInfo->biSizeImage
 	databuf(0) = NULL
 	databuf(1) = NULL	
 	'pixels  = NULL		
-end Function
+End Function
 
-sub free_rom()
+Sub free_rom()
 
 	erase(mydata)
 
@@ -2018,7 +2106,7 @@ Function WndProc(hWnd As HWND, msg As  UINT, wParam As WPARAM, lParam As LPARAM)
 		   End If
 							'Print pic1
 							'SaveNESScrn(pic1,256,240,@mydata(0))
-						SaveNESScrn(pic1,256,240,@nes.ppu._mydata(0))
+						'SaveNESScrn(pic1,256,240,@nes.ppu._mydata(0))
 						
 						
 						Case IDM_FILE_PATTABLE01
@@ -2027,16 +2115,20 @@ Function WndProc(hWnd As HWND, msg As  UINT, wParam As WPARAM, lParam As LPARAM)
 		   If FileExists(pic1) Then
    	Kill(pic1)
 		   End If
+		   
+		   drawPatternsPals()
+		   	SaveNESScrn(pic1,512,480,@pat_imgdata(0))
+		   	
 							'Print pic1
-							SaveNESScrn(pic1,128,128,@mydata_pattables(0).mydata(0))
+							'SaveNESScrn(pic1,128,128,@mydata_pattables(0).mydata(0))
 						Case IDM_FILE_PATTABLE02
 								pic1 = file_opensave(hwnd,FALSE)
 		   					If FileExists(pic1) Then
 		   					Kill(pic1)
 		  						 End If
 							'Print pic1
-							SaveNESScrn(pic1,128,128,@mydata_pattables(1).mydata(0))
-							
+							'SaveNESScrn(pic1,128,128,@mydata_pattables(1).mydata(0))
+							drawPatternsPals()
 							
 						Case IDM_FILE_EXIT
 							
@@ -2444,29 +2536,29 @@ Sub init()
 'nes.cpu.disassemble(&H0000, &HFFFF) '&H35
 '
 'bus_reset()
-color 255
-print "			 WELCOME TO ";
-color 60
-print "NESTEA V0.1!"
-color 255
-print " "
-print "please note this emulator is for EDUCATIONAL and FUN purposes"
-print "and it's a working in progress, such audio bugs.It can only play 1 player for now with mapper 0,1,2,3,66 and 4 games"
-print "mapper 4 is incomplete i got the irq working but might need some fixing still. 
-print "should be able to run some mapper 4 games with it."
+Color 255
+Print "			 WELCOME TO ";
+Color 60
+Print "NESTEA V0.1!"
+Color 255
+Print " "
+Print "please note this emulator is for EDUCATIONAL and FUN purposes"
+Print "and it's a working in progress, such audio bugs.It can only play 1 player for now with mapper 0,1,2,3,66 and 4 games"
+Print "mapper 4 is incomplete i got the irq working but might need some fixing still. 
+Print "should be able to run some mapper 4 games with it."
 
-print " "
-print "the controls are:"
-print "X - A"
-print "Z - B"
-print "A - SELECT"
-print "S - START"
-print" "
-print "press any key to continue"
+Print " "
+Print "the controls are:"
+Print "X - A"
+Print "Z - B"
+Print "A - SELECT"
+Print "S - START"
+Print" "
+Print "press any key to continue"
 
 
-sleep
-cls
+Sleep
+Cls
 init_rom
 
 
@@ -2542,7 +2634,7 @@ WinMain(GetModuleHandle(NULL), NULL, COMMAND(), SW_NORMAL)
 				
 
 
-sub audioloop()
+Sub audioloop()
  dim _apu as APU ptr
 'audio_hndler = new AudioHandler(48000,AUDIO_S16SYS,2048,16)
 'audio_hndler->start_aud()
@@ -2583,7 +2675,7 @@ End Sub
 
 
   
-sub debug1()
+Sub debug1()
 	
  	screen ,0,1
 '

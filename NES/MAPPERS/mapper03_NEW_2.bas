@@ -32,7 +32,8 @@ Declare function getromaddr1(addr1 as uint16_t) as uint32_t
   	Declare function getmirroringadr(addr1 as uint16_t) as uint32_t
   	  	
     	chrbank  as uint32_t
-  	  	
+  	  		Declare function ppuPeak(adr As uint16_t) As uint8_t
+  	
   	
   	private:
   nCHRBankSelect as 	uint8_t = &H00
@@ -219,6 +220,6 @@ End Function
 	
  End Function
 
-function Mapper_03.ppuPeak(adr As uint16_t) As uint8_t
+Function Mapper_03.ppuPeak(adr As uint16_t) As uint8_t
 	return this._ppuRead(adr)
 End Function

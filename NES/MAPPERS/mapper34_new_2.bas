@@ -17,6 +17,7 @@ Type Mapper_34 extends Mapper
   	Public:
   Declare Constructor(prgbanks As uint8_t,chrbanks As uint8_t)
   declare Destructor()
+  		Declare function ppuPeak(adr As uint16_t) As uint8_t
   	
   	Public:
   	Declare function cpuMapRead(addr As uint16_t,ByRef mapped_addr As uint32_t , byref byte_data As uint8_t) As BOOLEAN

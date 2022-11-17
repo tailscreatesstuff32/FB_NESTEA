@@ -22,7 +22,7 @@ Type ppu_type as PPU
 'type cart_type as ????
 'type cart_type as ????
 
-
+Dim Shared keysenable As bool
 
 'WITH AUDIO///////////////////////
 #Include Once  "nes\NES.bi"
@@ -1083,8 +1083,9 @@ End Sub
 
 Function KEYPRESSED(vk_code As Integer) As bool
 	static Iskeyup(&HFF) As bool
-			
-	If  IIf(GetAsyncKeyState(vk_code) And &H8000, 1, 0) And iskeyup(vk_code) = TRUE Then
+	  
+	If keysenable = TRUE Then
+	 If  IIf(GetAsyncKeyState(vk_code) And &H8000, 1, 0) And iskeyup(vk_code) = TRUE Then
 		iskeyup(vk_code) = IIf(GetAsyncKeyState(vk_code) And &H8000, FALSE, TRUE)
 	Return TRUE
 	 
@@ -1092,6 +1093,10 @@ Function KEYPRESSED(vk_code As Integer) As bool
 		iskeyup(vk_code) = IIf(GetAsyncKeyState(vk_code) And &H8000, FALSE, true)		
 		Return FALSE
 	End If
+		
+	EndIf
+		
+
 	
 	Return FALSE			
 End Function
@@ -1952,12 +1957,12 @@ Function WndProc(hWnd As HWND, msg As  UINT, wParam As WPARAM, lParam As LPARAM)
 			
 			case WA_INACTIVE
 			 audio_hndler->stop_aud
-			 
+			 keysenable = FALSE
 			'audio_hndler->stop_aud
           emurun = bEmulationRun
           bEmulationRun = false
 			case else
-				 
+				 keysenable = TRUE
 					 'If muted = false and bEmulationRun = true then
 						'	audio_hndler->start_aud 
 						'
